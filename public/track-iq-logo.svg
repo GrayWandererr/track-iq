@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 342.67 103.57">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: -.08em;
+      }
+
+      .cls-2 {
+        fill: #7773b6;
+      }
+
+      .cls-3 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-4 {
+        fill: #444;
+        font-family: HelveticaLTPro-Bold, 'Helvetica LT Pro';
+        font-size: 85px;
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <path class="cls-2" d="M321.64,85.08c-8.19,5.93-17.86,8.91-27.54,8.91-12.03,0-24.06-4.59-33.23-13.76-9.17-9.17-13.76-21.21-13.76-33.23s4.59-24.06,13.76-33.23c9.17-9.17,21.21-13.76,33.23-13.76s24.06,4.59,33.23,13.76c9.17,9.17,13.76,21.21,13.76,33.23,0,9.67-2.97,19.35-8.91,27.54l-10.14-10.14c3.31-5.31,4.97-11.36,4.97-17.4,0-8.42-3.21-16.85-9.64-23.28-6.43-6.43-14.86-9.65-23.28-9.65s-16.85,3.22-23.28,9.65c-6.43,6.43-9.64,14.86-9.64,23.28s3.22,16.85,9.65,23.28c6.43,6.43,14.86,9.64,23.27,9.64,6.04,0,12.09-1.66,17.4-4.97l10.14,10.14Z"/>
+  <rect class="cls-2" x="324.97" y="77.53" width="14.66" height="14.66" transform="translate(37.33 259.83) rotate(-45)"/>
+  <rect class="cls-2" x="224.47" y="20.04" width="14.92" height="73.94"/>
+  <rect class="cls-2" x="224.6" width="14.66" height="14.66"/>
+  <text class="cls-4" transform="translate(0 81.21)"><tspan class="cls-1" x="0" y="0">T</tspan><tspan x="45.14" y="0">ra</tspan><tspan class="cls-3" x="125.46" y="0">c</tspan><tspan x="171.02" y="0">k</tspan></text>
+</svg>
