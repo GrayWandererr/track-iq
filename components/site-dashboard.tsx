@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 
 interface SiteDashboardProps {
@@ -13,12 +12,14 @@ export function SiteDashboard({ selectedSite }: SiteDashboardProps) {
       <Card className="flex-1">
         <CardContent className="p-0 h-full">
           <div className="relative w-full h-full min-h-[600px]">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-thwTNGBp18REhDmq06qXnNtVJFxbR2.png"
-              alt="Site Level Executive Dashboard"
-              fill
-              className="object-contain"
-              priority
+            <iframe 
+              title="SiteLevelDashboard" 
+              width="100%" 
+              height="100%" 
+              src="https://app.powerbi.com/reportEmbed?reportId=fde9e2c2-a760-47a3-84ff-dc65a2b0b0ad&autoAuth=true&ctid=0861cd9f-3d1e-46c3-b687-68e9b6ca794e" 
+              frameBorder="0" 
+              allowFullScreen={true}
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             />
           </div>
         </CardContent>
