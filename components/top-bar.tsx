@@ -22,13 +22,13 @@ export function TopBar({ selectedSite, setSelectedSite, setActiveRoute }: TopBar
   }
 
   return (
-    <header className="h-14 border-b border-gray-200 bg-gradient-to-r from-[#f8f9fa] to-[#e9ecef] px-4 flex items-center justify-between shadow-sm">
+    <header className="h-14 border-b border-border bg-card px-4 flex items-center justify-between">
       {/* Left Cluster */}
       <div className="flex items-center">
         {/* Site Switcher */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-1 rounded-full bg-white border-gray-300">
+            <Button variant="outline" size="sm" className="h-8 gap-1 rounded-full">
               {selectedSite || "Select Site"}
               <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -50,18 +50,18 @@ export function TopBar({ selectedSite, setSelectedSite, setActiveRoute }: TopBar
         </DropdownMenu>
 
         {/* Breadcrumb */}
-        <div className="ml-4 flex items-center text-sm text-gray-600">
+        <div className="ml-4 flex items-center text-sm text-muted-foreground">
           {selectedSite ? (
             <>
               <span>Site</span>
               <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="font-medium">{selectedSite}</span>
+              <span className="font-medium text-foreground">{selectedSite}</span>
             </>
           ) : (
             <>
               <span>Network</span>
               <ChevronRight className="h-4 w-4 mx-1" />
-              <span className="font-medium">TrackIQ</span>
+              <span className="font-medium text-foreground">Prologis Innovation Platform</span>
             </>
           )}
         </div>
@@ -70,23 +70,23 @@ export function TopBar({ selectedSite, setSelectedSite, setActiveRoute }: TopBar
       {/* Center - Search */}
       <div className="flex-1 max-w-md mx-4">
         <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-          <Input type="text" placeholder="Search..." className="w-full pl-9 h-9 bg-white border-gray-300" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input type="text" placeholder="Search..." className="w-full pl-9 h-9" />
         </div>
       </div>
 
       {/* Right Cluster */}
       <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" className="h-9 w-9 text-gray-600 hover:bg-gray-200">
+        <Button variant="ghost" size="icon" className="h-9 w-9">
           <Bell className="h-5 w-5" />
         </Button>
 
-        <Button variant="ghost" size="icon" className="h-9 w-9 text-gray-600 hover:bg-gray-200">
+        <Button variant="ghost" size="icon" className="h-9 w-9">
           <Plus className="h-5 w-5" />
         </Button>
 
         <div className="relative">
-          <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-white" />
+          <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-primary border-2 border-background" />
           <Avatar className="h-8 w-8">
             <AvatarImage src="/vibrant-street-market.png" alt="User" />
             <AvatarFallback>U</AvatarFallback>

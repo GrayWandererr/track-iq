@@ -1,73 +1,112 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
-import { AppSidebar } from "./app-sidebar"
-import { TopBar } from "./top-bar"
-import { NetworkDashboard } from "./network-dashboard"
-import { SiteDashboard } from "./site-dashboard"
-import { WaveManagement } from "./wave-management"
-import { OutboundSorter } from "./outbound-sorter"
+import { AppSidebar } from "@/components/app-sidebar"
+import { TopBar } from "@/components/top-bar"
+import { NetworkDashboard } from "@/components/network-dashboard"
+import { SiteDashboard } from "@/components/site-dashboard"
+import { WaveManagement } from "@/components/wave-management"
+import { OutboundSorter } from "@/components/outbound-sorter"
+import AgentStudio from "@/components/agent-studio"
+import ConnectorsPage from "@/app/connectors/page"
+import { cn } from "@/lib/utils"
+import { Toaster } from "@/components/ui/toaster"
+import { initializeStore } from "@/store/useAgentStore"
+import { usePathname } from "next/navigation"
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  // State for sidebar collapse
+  const pathname = usePathname()
+  const [activeRoute, setActiveRoute] = useState<string>("Network Dashboard")
+  const [selectedSite, setSelectedSite] = useState<string | null>(null)
   const [isCollapsed, setIsCollapsed] = useState(false)
 
-  // State for active route
-  const [activeRoute, setActiveRoute] = useState("Network Dashboard")
-
-  // State for selected site
-  const [selectedSite, setSelectedSite] = useState<string | null>(null)
-
-  // Toggle sidebar collapse
-  const toggleCollapse = () => {
-    setIsCollapsed((prev) => !prev)
-  }
-
-  // Handle keyboard shortcut (Shift + L) to toggle sidebar
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && e.key === "L") {
-        toggleCollapse()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
+    // Initialize the store with mock data when app loads
+    initializeStore()
   }, [])
 
-  // Render content based on active route
-  const renderContent = () => {
+  // Check if we're on a special page that doesn't need the sidebar
+  const isCanvasEditorPage = pathname.startsWith('/canvas-editor/')
+  const isReferenceGuidePage = pathname === '/reference-guide'
+  
+  if (isCanvasEditorPage || isReferenceGuidePage) {
+    return <>{children}</>
+  }
+
+  const getContent = () => {
+    const isConnectorsPage = pathname === '/connectors'
+    
+    if (isConnectorsPage) {
+      return <ConnectorsPage />
+    }
+
+    // Handle different route patterns
     if (activeRoute === "Network Dashboard") {
       return <NetworkDashboard />
-    } else if (activeRoute === "Site Dashboard" && selectedSite) {
+    } else if (activeRoute === "Site Dashboard") {
       return <SiteDashboard selectedSite={selectedSite} />
-    } else if (activeRoute === "Site Dashboard - Wave Management" && selectedSite) {
+    } else if (activeRoute === "Site Dashboard - Wave Management") {
       return <WaveManagement selectedSite={selectedSite} />
-    } else if (activeRoute === "Display Dashboards - Outbound Sorter" && selectedSite) {
+    } else if (activeRoute === "Display Dashboard - Outbound Sorter") {
       return <OutboundSorter selectedSite={selectedSite} />
-    } else if (activeRoute.includes("Site Dashboard -") && selectedSite) {
-      // For specific site dashboard sections
-      const section = activeRoute.replace("Site Dashboard - ", "")
+    } else if (activeRoute === "Agent Studio") {
+      return <AgentStudio />
+    } else if (activeRoute === "Display Dashboards") {
       return (
-        <div className="h-full w-full flex items-center justify-center text-gray-400">
-          {section} content for {selectedSite} will appear here
+        <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Display Dashboards</h2>
+            <p>Select a display dashboard from the sidebar</p>
+          </div>
         </div>
       )
-    } else if (activeRoute.includes("Display Dashboards") && selectedSite) {
-      // For display dashboards
-      const section = activeRoute.replace("Display Dashboards - ", "")
+    } else if (activeRoute === "Reports") {
       return (
-        <div className="h-full w-full flex items-center justify-center text-gray-400">
-          {section || "Display Dashboards"} content for {selectedSite} will appear here
+        <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Reports</h2>
+            <p>Reports functionality will appear here</p>
+          </div>
+        </div>
+      )
+    } else if (activeRoute === "Admin & Config") {
+      return (
+        <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Admin & Config</h2>
+            <p>Administration and configuration options will appear here</p>
+          </div>
+        </div>
+      )
+    } else if (activeRoute === "Connectors") {
+      return <ConnectorsPage />
+    } else if (activeRoute.includes("Site Dashboard -")) {
+      // For site dashboard sections (operational dashboards)
+      const section = activeRoute.replace("Site Dashboard - ", "")
+      return (
+        <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">{section}</h2>
+            <p>Operational dashboard for {section} will appear here</p>
+          </div>
+        </div>
+      )
+    } else if (activeRoute.includes("Display Dashboard -")) {
+      // For display dashboard sections
+      const section = activeRoute.replace("Display Dashboard - ", "")
+      return (
+        <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">{section}</h2>
+            <p>Display dashboard for {section} will appear here</p>
+          </div>
         </div>
       )
     } else {
       return (
         children || (
-          <div className="h-full w-full flex items-center justify-center text-gray-400">
-            {activeRoute} content will appear here
+          <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+            <p>Select an option from the sidebar</p>
           </div>
         )
       )
@@ -75,18 +114,25 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white">
-      <AppSidebar
-        isCollapsed={isCollapsed}
-        onToggleCollapse={toggleCollapse}
-        activeRoute={activeRoute}
-        setActiveRoute={setActiveRoute}
-        selectedSite={selectedSite}
-      />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <TopBar selectedSite={selectedSite} setSelectedSite={setSelectedSite} setActiveRoute={setActiveRoute} />
-        <main className="flex-1 overflow-auto bg-white p-6">{renderContent()}</main>
+    <>
+      <div className="flex h-screen w-full bg-background overflow-hidden">
+        <AppSidebar
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          activeRoute={activeRoute}
+          setActiveRoute={setActiveRoute}
+          selectedSite={selectedSite}
+        />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <TopBar selectedSite={selectedSite} setSelectedSite={setSelectedSite} setActiveRoute={setActiveRoute} />
+          <main className="flex-1 overflow-auto bg-background p-6">
+            <div className="h-full">
+              {getContent()}
+            </div>
+          </main>
+        </div>
+        <Toaster />
       </div>
-    </div>
+    </>
   )
 }

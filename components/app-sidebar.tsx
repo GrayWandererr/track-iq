@@ -26,10 +26,20 @@ import {
   Truck,
   Warehouse,
   Workflow,
+  Zap,
+  Telescope,
+  Link,
+  Settings,
+  ShoppingBag,
+  Palette,
+  Layout,
+  Users,
+  ExternalLink,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Separator } from "@/components/ui/separator"
 
 interface AppSidebarProps {
   isCollapsed: boolean
@@ -39,10 +49,10 @@ interface AppSidebarProps {
   selectedSite: string | null
 }
 
-// Define icons for nested menu items
-const siteIcons: Record<string, React.ReactNode> = {
+// Define icons for operational dashboards (under Site Dashboard)
+const operationalIcons: Record<string, React.ReactNode> = {
   Yard: <Warehouse className="w-4 h-4 mr-2" />,
-  "Dock/Door": <Truck className="w-4 h-4 mr-2" />,
+  "Dock / Door": <Truck className="w-4 h-4 mr-2" />,
   Receiving: <PackageOpen className="w-4 h-4 mr-2" />,
   Putaway: <Forklift className="w-4 h-4 mr-2" />,
   "Order Management": <ClipboardList className="w-4 h-4 mr-2" />,
@@ -56,12 +66,19 @@ const siteIcons: Record<string, React.ReactNode> = {
   B2B: <Network className="w-4 h-4 mr-2" />,
 }
 
-const displayIcons: Record<string, React.ReactNode> = {
+// Define icons for display dashboards
+const displayDashboardIcons: Record<string, React.ReactNode> = {
   "Outbound Sorter": <SortAsc className="w-4 h-4 mr-2" />,
   "Unit Sorter": <Scan className="w-4 h-4 mr-2" />,
   "Put-to-Light": <Monitor className="w-4 h-4 mr-2" />,
   "Locus Robots": <Robot className="w-4 h-4 mr-2" />,
-  "Digital Twin": <Workflow className="w-4 h-4 mr-2" />,
+}
+
+// Define icons for Agent Studio sub-items
+const agentStudioIcons: Record<string, React.ReactNode> = {
+  "Design Canvas": <Palette className="w-4 h-4 mr-2" />,
+  "Templates Gallery": <Layout className="w-4 h-4 mr-2" />,
+  "Active Agents": <Users className="w-4 h-4 mr-2" />,
 }
 
 export function AppSidebar({
@@ -73,12 +90,14 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({})
 
-  // Auto-open the section that contains the active route
+  // Auto-open sections based on active route
   useEffect(() => {
-    if (activeRoute.includes("Site Dashboard") && activeRoute !== "Network Dashboard") {
+    if (activeRoute.includes("Site Dashboard") && activeRoute !== "Site Dashboard") {
       setOpenSections((prev) => ({ ...prev, site: true }))
-    } else if (activeRoute.includes("Display Dashboards")) {
+    } else if (activeRoute.includes("Display Dashboard")) {
       setOpenSections((prev) => ({ ...prev, display: true }))
+    } else if (activeRoute.includes("Agent Studio")) {
+      setOpenSections((prev) => ({ ...prev, agentStudio: true }))
     }
   }, [activeRoute])
 
@@ -93,23 +112,32 @@ export function AppSidebar({
     setActiveRoute(route)
   }
 
+  const handleExternalLink = (url: string) => {
+    window.open(url, '_blank')
+  }
+
   return (
     <div
       className={cn(
-        "flex flex-col h-full bg-gradient-to-b from-[#1a1a2e] to-[#16213e] text-white border-r border-gray-800 transition-all duration-300 ease-in-out",
+        "flex flex-col h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ease-in-out",
         isCollapsed ? "w-[72px]" : "w-[240px]",
       )}
     >
-      {/* Logo */}
-      <div className={cn("flex items-center p-4 h-16", isCollapsed ? "justify-center" : "px-6")}>
+      {/* Logo/Brand */}
+      <div className={cn("flex items-center p-4 h-16 border-b border-sidebar-border", isCollapsed ? "justify-center" : "px-6")}>
         <div className="flex items-center gap-3">
           {isCollapsed ? (
             <div className="w-8 h-8 relative">
-              <Image src="/track-iq-logo.svg" alt="TrackIQ Logo" fill className="object-contain" />
+              <Image src="/prologis-logo.png" alt="Prologis Logo" fill className="object-contain" />
             </div>
           ) : (
-            <div className="h-8 w-32 relative">
-              <Image src="/track-iq-logo.svg" alt="TrackIQ Logo" fill className="object-contain" />
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-32 relative">
+                <Image src="/prologis-logo.png" alt="Prologis Logo" fill className="object-contain" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sidebar-foreground/70 text-xs">Innovations</span>
+              </div>
             </div>
           )}
         </div>
@@ -118,6 +146,8 @@ export function AppSidebar({
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4">
         <ul className="space-y-1 px-2">
+          {!isCollapsed && <SectionDivider label="Analytics" />}
+
           {/* Network Dashboard */}
           <NavItem
             icon={<Network className="w-5 h-5" />}
@@ -127,7 +157,7 @@ export function AppSidebar({
             onClick={() => handleNavClick("Network Dashboard")}
           />
 
-          {/* Site Dashboard - Only show nested items if a site is selected */}
+          {/* Site Dashboard - Collapsible with operational dashboards */}
           <NavItemWithChildren
             icon={<Building2 className="w-5 h-5" />}
             label="Site Dashboard"
@@ -136,50 +166,92 @@ export function AppSidebar({
             onToggle={() => toggleSection("site")}
             isActive={activeRoute.includes("Site Dashboard")}
             onClick={() => handleNavClick("Site Dashboard")}
-            disabled={!selectedSite}
-            children={
-              selectedSite
-                ? [
-                    "Yard",
-                    "Dock/Door",
-                    "Receiving",
-                    "Putaway",
-                    "Order Management",
-                    "Wave Management",
-                    "Picking",
-                    "Packing",
-                    "Consolidation",
-                    "Staging",
-                    "Shipping",
-                    "Parcel",
-                    "B2B",
-                  ]
-                : []
-            }
+            children={[
+              "Yard",
+              "Dock / Door",
+              "Receiving",
+              "Putaway",
+              "Order Management",
+              "Wave Management",
+              "Picking",
+              "Packing",
+              "Consolidation",
+              "Staging",
+              "Shipping",
+              "Parcel",
+              "B2B",
+            ]}
             onChildClick={(child) => handleNavClick(`Site Dashboard - ${child}`)}
             activeChild={activeRoute.replace("Site Dashboard - ", "")}
-            childIcons={siteIcons}
+            childIcons={operationalIcons}
           />
 
-          {/* Display Dashboards - Only show nested items if a site is selected */}
+          {/* Display Dashboards - Collapsible with display dashboard modules */}
           <NavItemWithChildren
             icon={<Monitor className="w-5 h-5" />}
             label="Display Dashboards"
             isCollapsed={isCollapsed}
             isOpen={openSections["display"]}
             onToggle={() => toggleSection("display")}
-            isActive={activeRoute.includes("Display Dashboards")}
+            isActive={activeRoute.includes("Display Dashboard")}
             onClick={() => handleNavClick("Display Dashboards")}
-            disabled={!selectedSite}
-            children={
-              selectedSite ? ["Outbound Sorter", "Unit Sorter", "Put-to-Light", "Locus Robots", "Digital Twin"] : []
-            }
-            onChildClick={(child) => handleNavClick(`Display Dashboards - ${child}`)}
-            activeChild={activeRoute.replace("Display Dashboards - ", "")}
-            childIcons={displayIcons}
+            children={[
+              "Outbound Sorter",
+              "Unit Sorter", 
+              "Put-to-Light",
+              "Locus Robots",
+            ]}
+            onChildClick={(child) => handleNavClick(`Display Dashboard - ${child}`)}
+            activeChild={activeRoute.replace("Display Dashboard - ", "")}
+            childIcons={displayDashboardIcons}
           />
 
-          {/* Reports */}
+          {!isCollapsed && <SectionDivider label="AI & Extension Layer" />}
+
+          {/* AI & Extension Layer */}
+          <NavItem
+            icon={<Zap className="w-5 h-5" />}
+            label="Agent Studio"
+            isCollapsed={isCollapsed}
+            isActive={activeRoute === "Agent Studio"}
+            onClick={() => handleNavClick("Agent Studio")}
+          />
+
+          <NavItemWithExternalLink
+            icon={<Telescope className="w-5 h-5" />}
+            label="Digital Twin Studio"
+            isCollapsed={isCollapsed}
+            onClick={() => handleExternalLink("#")}
+          />
+
+          {!isCollapsed && <SectionDivider label="Integrations" />}
+
+          {/* Integrations */}
+          <NavItemWithExternalLink
+            icon={<Link className="w-5 h-5" />}
+            label="Integrations Hub"
+            isCollapsed={isCollapsed}
+            onClick={() => handleExternalLink("#")}
+          />
+
+          <NavItem
+            icon={<Settings className="w-5 h-5" />}
+            label="Connectors"
+            isCollapsed={isCollapsed}
+            isActive={activeRoute === "Connectors"}
+            onClick={() => handleNavClick("Connectors")}
+          />
+
+          <NavItemWithExternalLink
+            icon={<ShoppingBag className="w-5 h-5" />}
+            label="Essentials Marketplace"
+            isCollapsed={isCollapsed}
+            onClick={() => handleExternalLink("#")}
+          />
+
+          {!isCollapsed && <SectionDivider label="Admin & Reports" />}
+
+          {/* Admin & Reports */}
           <NavItem
             icon={<LineChart className="w-5 h-5" />}
             label="Reports"
@@ -188,7 +260,6 @@ export function AppSidebar({
             onClick={() => handleNavClick("Reports")}
           />
 
-          {/* Admin & Config */}
           <NavItem
             icon={<Cog className="w-5 h-5" />}
             label="Admin & Config"
@@ -196,26 +267,17 @@ export function AppSidebar({
             isActive={activeRoute === "Admin & Config"}
             onClick={() => handleNavClick("Admin & Config")}
           />
-
-          {/* Help */}
-          <NavItem
-            icon={<HelpCircle className="w-5 h-5" />}
-            label="Help"
-            isCollapsed={isCollapsed}
-            isActive={activeRoute === "Help"}
-            onClick={() => handleNavClick("Help")}
-          />
         </ul>
       </nav>
 
       {/* Collapse Button */}
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-sidebar-border">
         <Button
           variant="ghost"
           size="sm"
           onClick={onToggleCollapse}
           className={cn(
-            "w-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-gray-800",
+            "w-full flex items-center justify-center text-sidebar-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent",
             isCollapsed ? "px-2" : "",
           )}
         >
@@ -233,6 +295,20 @@ export function AppSidebar({
   )
 }
 
+// Section Divider Component
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center py-2 px-2">
+      <Separator className="flex-1" />
+      <span className="px-2 text-xs text-sidebar-foreground/60 uppercase tracking-wider">
+        {label}
+      </span>
+      <Separator className="flex-1" />
+    </div>
+  )
+}
+
+// Navigation Item Component
 interface NavItemProps {
   icon: React.ReactNode
   label: string
@@ -250,7 +326,7 @@ function NavItem({ icon, label, isCollapsed, isActive, disabled, onClick }: NavI
         className={cn(
           "w-full justify-start font-normal h-10 transition-colors",
           isCollapsed ? "px-2" : "",
-          isActive ? "bg-[#7773b6] text-white hover:bg-[#6a67a3]" : "text-gray-300 hover:bg-gray-800 hover:text-white",
+          isActive ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
           disabled && "opacity-50 cursor-not-allowed",
         )}
         onClick={onClick}
@@ -265,6 +341,40 @@ function NavItem({ icon, label, isCollapsed, isActive, disabled, onClick }: NavI
   )
 }
 
+// Navigation Item with External Link Component
+interface NavItemWithExternalLinkProps extends NavItemProps {
+  subtitle?: string
+}
+
+function NavItemWithExternalLink({ icon, label, isCollapsed, onClick, subtitle }: NavItemWithExternalLinkProps) {
+  return (
+    <li>
+      <Button
+        variant="ghost"
+        className={cn(
+          "w-full justify-start font-normal h-10 transition-colors text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+          isCollapsed ? "px-2" : "",
+        )}
+        onClick={onClick}
+      >
+        <span className="flex items-center w-full">
+          {icon}
+          {!isCollapsed && (
+            <div className="flex items-center justify-between w-full ml-3">
+              <div className="flex flex-col">
+                <span>{label}</span>
+                {subtitle && <span className="text-xs text-sidebar-foreground/60">{subtitle}</span>}
+              </div>
+              <ExternalLink className="h-3 w-3 text-sidebar-foreground/40" />
+            </div>
+          )}
+        </span>
+      </Button>
+    </li>
+  )
+}
+
+// Navigation Item with Children Component
 interface NavItemWithChildrenProps extends NavItemProps {
   isOpen: boolean
   onToggle: () => void
@@ -282,7 +392,6 @@ function NavItemWithChildren({
   isOpen,
   onToggle,
   children,
-  disabled,
   onClick,
   onChildClick,
   activeChild,
@@ -295,7 +404,6 @@ function NavItemWithChildren({
         label={label}
         isCollapsed={isCollapsed}
         isActive={isActive}
-        disabled={disabled}
         onClick={onClick}
       />
     )
@@ -303,18 +411,16 @@ function NavItemWithChildren({
 
   return (
     <li>
-      <Collapsible open={isOpen && !disabled} onOpenChange={disabled ? undefined : onToggle}>
+      <Collapsible open={isOpen} onOpenChange={onToggle}>
         <CollapsibleTrigger asChild>
           <Button
             variant="ghost"
             className={cn(
               "w-full justify-start font-normal h-10 transition-colors",
               isActive
-                ? "bg-[#7773b6] text-white hover:bg-[#6a67a3]"
-                : "text-gray-300 hover:bg-gray-800 hover:text-white",
-              disabled && "opacity-50 cursor-not-allowed",
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
             )}
-            disabled={disabled}
             onClick={onClick}
           >
             <span className="flex items-center w-full">
@@ -334,8 +440,8 @@ function NavItemWithChildren({
                   className={cn(
                     "w-full justify-start font-normal h-8 transition-colors",
                     activeChild === item
-                      ? "bg-[#7773b6] text-white hover:bg-[#6a67a3]"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white",
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   )}
                   onClick={() => onChildClick?.(item)}
                 >
