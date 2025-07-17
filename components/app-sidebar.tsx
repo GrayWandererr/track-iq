@@ -221,11 +221,12 @@ export function AppSidebar({
             onClick={() => handleNavClick("Agent Studio")}
           />
 
-          <NavItemWithExternalLink
+          <NavItem
             icon={<Telescope className="w-5 h-5" />}
             label="Digital Twin Studio"
             isCollapsed={isCollapsed}
-            onClick={() => handleExternalLink("#")}
+            isActive={activeRoute === "Digital Twin Studio"}
+            onClick={() => handleNavClick("Digital Twin Studio")}
           />
 
           {!isCollapsed && <SectionDivider label="Product Hub" />}

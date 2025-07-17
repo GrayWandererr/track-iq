@@ -12,6 +12,7 @@ import ConnectorsPage from "@/app/connectors/page"
 import { YardAlert } from "@/components/yard-alert"
 import { GateLog } from "@/components/gate-log"
 import { ProductMarketplace } from "@/components/product-marketplace"
+import { DigitalTwinStudio } from "@/components/digital-twin-studio"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { initializeStore } from "@/store/useAgentStore"
@@ -54,6 +55,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       return <OutboundSorter selectedSite={selectedSite} />
     } else if (activeRoute === "Agent Studio") {
       return <AgentStudio />
+    } else if (activeRoute === "Digital Twin Studio") {
+      return <DigitalTwinStudio />
     } else if (activeRoute === "Yard Alert") {
       return <YardAlert setActiveRoute={setActiveRoute} />
     } else if (activeRoute.startsWith("gate-log/")) {
