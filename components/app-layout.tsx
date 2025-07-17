@@ -9,6 +9,9 @@ import { WaveManagement } from "@/components/wave-management"
 import { OutboundSorter } from "@/components/outbound-sorter"
 import AgentStudio from "@/components/agent-studio"
 import ConnectorsPage from "@/app/connectors/page"
+import { YardAlert } from "@/components/yard-alert"
+import { GateLog } from "@/components/gate-log"
+import { ProductMarketplace } from "@/components/product-marketplace"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { initializeStore } from "@/store/useAgentStore"
@@ -51,6 +54,32 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       return <OutboundSorter selectedSite={selectedSite} />
     } else if (activeRoute === "Agent Studio") {
       return <AgentStudio />
+    } else if (activeRoute === "Yard Alert") {
+      return <YardAlert setActiveRoute={setActiveRoute} />
+    } else if (activeRoute.startsWith("gate-log/")) {
+      // Handle dynamic gate log routes
+      const yardId = activeRoute.replace("gate-log/", "")
+      return <GateLog yardId={yardId} />
+    } else if (activeRoute === "Yard Security") {
+      return (
+        <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Yard Security</h2>
+            <p>Yard security features will appear here</p>
+          </div>
+        </div>
+      )
+    } else if (activeRoute === "Warehouse Security") {
+      return (
+        <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Warehouse Security</h2>
+            <p>Warehouse security features will appear here</p>
+          </div>
+        </div>
+      )
+    } else if (activeRoute === "Product Marketplace") {
+      return <ProductMarketplace />
     } else if (activeRoute === "Display Dashboards") {
       return (
         <div className="h-full w-full flex items-center justify-center text-muted-foreground">

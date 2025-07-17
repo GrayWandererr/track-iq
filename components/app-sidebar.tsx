@@ -35,6 +35,10 @@ import {
   Layout,
   Users,
   ExternalLink,
+  AlertTriangle,
+  Shield,
+  ShieldCheck,
+  Store,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -222,6 +226,40 @@ export function AppSidebar({
             label="Digital Twin Studio"
             isCollapsed={isCollapsed}
             onClick={() => handleExternalLink("#")}
+          />
+
+          {!isCollapsed && <SectionDivider label="Product Hub" />}
+
+          <NavItem
+            icon={<AlertTriangle className="w-5 h-5" />}
+            label="Yard Alert"
+            isCollapsed={isCollapsed}
+            isActive={activeRoute === "Yard Alert"}
+            onClick={() => handleNavClick("Yard Alert")}
+          />
+
+          <NavItem
+            icon={<Shield className="w-5 h-5" />}
+            label="Yard Security"
+            isCollapsed={isCollapsed}
+            isActive={activeRoute === "Yard Security"}
+            onClick={() => handleNavClick("Yard Security")}
+          />
+
+          <NavItem
+            icon={<ShieldCheck className="w-5 h-5" />}
+            label="Warehouse Security"
+            isCollapsed={isCollapsed}
+            isActive={activeRoute === "Warehouse Security"}
+            onClick={() => handleNavClick("Warehouse Security")}
+          />
+
+          <NavItem
+            icon={<Store className="w-5 h-5" />}
+            label="Product Marketplace"
+            isCollapsed={isCollapsed}
+            isActive={activeRoute === "Product Marketplace"}
+            onClick={() => handleNavClick("Product Marketplace")}
           />
 
           {!isCollapsed && <SectionDivider label="Integrations" />}
